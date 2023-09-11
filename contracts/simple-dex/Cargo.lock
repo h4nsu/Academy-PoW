@@ -610,6 +610,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "psp22"
+version = "1.0.0"
+dependencies = [
+ "ink",
+ "parity-scale-codec",
+ "psp22-traits",
+]
+
+[[package]]
 name = "psp22-traits"
 version = "1.0.0"
 dependencies = [
@@ -838,6 +847,7 @@ version = "1.0.0"
 dependencies = [
  "ink",
  "parity-scale-codec",
+ "psp22",
  "psp22-traits",
  "scale-info",
 ]

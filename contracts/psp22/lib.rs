@@ -2,9 +2,7 @@
 
 #[ink::contract]
 mod psp22 {
-    use ink::{
-        codegen::EmitEvent, prelude::vec::Vec, reflect::ContractEventBase, storage::Mapping,
-    };
+    use ink::{prelude::vec::Vec, storage::Mapping};
     use psp22_traits::{PSP22Error, PSP22};
 
     #[ink(event)]
@@ -33,8 +31,6 @@ mod psp22 {
         allowances: Mapping<(AccountId, AccountId), Balance>,
     }
 
-    pub type Event = <Token as ContractEventBase>::Type;
-
     impl Token {
         #[ink(constructor)]
         pub fn new(total_supply: Balance) -> Self {
@@ -56,14 +52,11 @@ mod psp22 {
         ) -> Result<(), PSP22Error> {
             self.allowances.insert((&owner, &spender), &amount);
 
-            Self::emit_event(
-                self.env(),
-                Event::Approval(Approval {
-                    owner,
-                    spender,
-                    amount,
-                }),
-            );
+            self.env().emit_event(Approval {
+                owner,
+                spender,
+                amount,
+            });
 
             Ok(())
         }
@@ -86,23 +79,13 @@ mod psp22 {
             let to_balance = self.balance_of(*to);
             self.balances.insert(to, &(to_balance + value));
 
-            Self::emit_event(
-                self.env(),
-                Event::Transfer(Transfer {
-                    from: *from,
-                    to: *to,
-                    value,
-                }),
-            );
+            self.env().emit_event(Transfer {
+                from: *from,
+                to: *to,
+                value,
+            });
 
             Ok(())
-        }
-
-        fn emit_event<EE>(emitter: EE, event: Event)
-        where
-            EE: EmitEvent<Self>,
-        {
-            emitter.emit_event(event);
         }
     }
 

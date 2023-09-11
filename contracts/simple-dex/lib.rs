@@ -12,12 +12,10 @@
 mod dex {
 
     use ink::{
-        codegen::EmitEvent,
         prelude::{
             string::{String, ToString},
             vec::Vec,
         },
-        reflect::ContractEventBase,
         storage::{traits::ManualKey, Lazy, Mapping},
     };
     use psp22_traits::{PSP22Error, PSP22};
@@ -39,8 +37,6 @@ mod dex {
             DexError::PSP22(e)
         }
     }
-
-    type Event = <SimpleDex as ContractEventBase>::Type;
 
     #[ink(event)]
     pub struct Swapped {
@@ -244,14 +240,11 @@ mod dex {
             self.data.set(&data);
 
             // emit event
-            Self::emit_event(
-                self.env(),
-                Event::Deposit(Deposit {
-                    caller,
-                    deposits,
-                    issued_shares,
-                }),
-            );
+            self.env().emit_event(Deposit {
+                caller,
+                deposits,
+                issued_shares,
+            });
 
             Ok(())
         }
@@ -312,14 +305,11 @@ mod dex {
             self.data.set(&data);
 
             // emit event
-            Self::emit_event(
-                self.env(),
-                Event::Withdrawal(Withdrawal {
-                    caller,
-                    withdrawals,
-                    redeemed_shares,
-                }),
-            );
+            self.env().emit_event(Withdrawal {
+                caller,
+                withdrawals,
+                redeemed_shares,
+            });
 
             Ok(())
         }
@@ -369,16 +359,13 @@ mod dex {
             self.transfer_tx(token_out, caller, amount_token_out)?;
 
             // emit event
-            Self::emit_event(
-                self.env(),
-                Event::Swapped(Swapped {
-                    caller,
-                    token_in,
-                    token_out,
-                    amount_in: amount_token_in,
-                    amount_out: amount_token_out,
-                }),
-            );
+            self.env().emit_event(Swapped {
+                caller,
+                token_in,
+                token_out,
+                amount_in: amount_token_in,
+                amount_out: amount_token_out,
+            });
 
             Ok(())
         }
@@ -521,13 +508,6 @@ mod dex {
         ) -> Result<(), PSP22Error> {
             let mut psp22: ink::contract_ref!(PSP22) = token.into();
             psp22.transfer(to, amount, Vec::new())
-        }
-
-        fn emit_event<EE>(emitter: EE, event: Event)
-        where
-            EE: EmitEvent<SimpleDex>,
-        {
-            emitter.emit_event(event);
         }
     }
 

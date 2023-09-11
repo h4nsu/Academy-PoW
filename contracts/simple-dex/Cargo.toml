@@ -11,6 +11,7 @@ scale = { package = "parity-scale-codec", version = "3", default-features = fals
 scale-info = { version = "2.3", default-features = false, features = ["derive"], optional = true }
 
 psp22-traits = { path = "../psp22-traits" , default-features = false }
+psp22 = { path = "../psp22" , default-features = false }
 
 [lib]
 name = "simple_dex"
